@@ -61,7 +61,8 @@ curl -fsSL https://raw.githubusercontent.com/<owner>/opencode-openrouter-eu/main
   -o ~/.config/opencode/plugins/openrouter-eu.js
 ```
 
-The `plugin add` forms record the plugin in the global `opencode.json` for you. The manual form needs no config entry: files in `~/.config/opencode/plugins/` are loaded automatically.
+The `plugin add` forms record the plugin in the global `opencode.json` for you,
+under the `plugins` key. The manual form needs no config entry: files in `~/.config/opencode/plugins/` are loaded automatically.
 
 Then restart OpenCode.
 
