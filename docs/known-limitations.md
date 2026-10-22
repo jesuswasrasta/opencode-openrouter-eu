@@ -23,23 +23,29 @@ removed instead of being offered and failing later.
 ## Routers
 
 Routers are meta-models: instead of answering themselves, they pick another
-model at request time. The in-region catalog does not list them, so the plugin
-removes them all. What they actually do in-region differs from router to router.
+model at request time. OpenRouter documents them in its [routers
+guide](https://openrouter.ai/docs/guides/routing/routers), and states that
+router-type models (such as the Auto Router) are [excluded from regional model
+lists](https://openrouter.ai/docs/guides/features/in-region-routing). The plugin
+therefore removes them all. What they actually do in-region differs from router
+to router:
 
 | Router | Observed response in-region | Usable |
 | --- | --- | --- |
-| `openrouter/auto` | `400`, explicitly not available in a data region | no |
-| `openrouter/free` | `404`, no endpoints support the data region | no |
-| `openrouter/bodybuilder` | `404`, no endpoints support the data region | no |
-| `openrouter/fusion` | `403`, not available on region-specific endpoints | no |
-| `openrouter/pareto-code` | `200`, routes to a model with an in-region endpoint | yes |
+| [`openrouter/auto`](https://openrouter.ai/docs/guides/routing/routers/auto-router) | `400`, explicitly not available in a data region | no |
+| [`openrouter/free`](https://openrouter.ai/docs/guides/routing/routers/free-router) | `404`, no endpoints support the data region | no |
+| [`openrouter/bodybuilder`](https://openrouter.ai/docs/guides/routing/routers/body-builder) | `404`, no endpoints support the data region | no |
+| [`openrouter/fusion`](https://openrouter.ai/docs/guides/routing/routers/fusion-router) | `403`, not available on region-specific endpoints | no |
+| [`openrouter/pareto-code`](https://openrouter.ai/docs/guides/routing/routers/pareto-router) | `200`, routes to a model with an in-region endpoint | yes |
 
 Status codes and catalog contents were observed on the European endpoint on
-2026-10-22. OpenRouter can change them at any time.
+2026-10-22. OpenRouter can change them at any time, and it can add routers that
+this table does not mention: the plugin hides them until they appear in the
+catalog or you allow-list them.
 
 ### Auto Router (`openrouter/auto`)
 
-The Auto Router is refused inside a data region:
+The [Auto Router](https://openrouter.ai/docs/guides/routing/routers/auto-router) is refused inside a data region:
 
 ```json
 {
@@ -64,7 +70,8 @@ A missing `openrouter/auto` is therefore expected, not a bug.
 
 ### Pareto Code Router (`openrouter/pareto-code`)
 
-`openrouter/pareto-code` is the exception: the in-region catalog does not list
+The [Pareto Router](https://openrouter.ai/docs/guides/routing/routers/pareto-router)
+(`openrouter/pareto-code`) is the exception: the in-region catalog does not list
 it, but the endpoint serves it. It routes to a model that has an in-region
 endpoint, so the request succeeds.
 
@@ -129,6 +136,13 @@ model IDs already contain a provider prefix:
 opencode run -m openrouter/openrouter/pareto-code "ok"
 opencode run -m openrouter/openrouter/auto "ok"
 ```
+
+## Further reading
+
+- [OpenRouter: Routers](https://openrouter.ai/docs/guides/routing/routers), the
+  index of all router modes, including those not covered here.
+- [OpenRouter: In-Region Routing](https://openrouter.ai/docs/guides/features/in-region-routing),
+  the rules behind regional guardrails and regional model lists.
 
 ## Scope
 
