@@ -1,0 +1,35 @@
+{
+  "name": "opencode-openrouter-eu",
+  "version": "0.1.0",
+  "description": "OpenCode plugin that restricts the OpenRouter model list to the models served from a single data region (Europe by default).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "openrouter",
+    "eu",
+    "data-residency"
+  ],
+  "license": "MIT",
+  "author": "Ferdinando Santacroce <ferdinando.santacroce@gmail.com>",
+  "scripts": {
+    "build": "bun build src/index.ts --outfile dist/index.js --target node --format esm",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "check": "bun run typecheck && bun test && bun run build",
+    "prepare": "bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.9.0"
+  }
+}

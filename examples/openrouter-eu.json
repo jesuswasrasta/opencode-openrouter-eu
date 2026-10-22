@@ -1,0 +1,9 @@
+{
+  "providerID": "openrouter",
+  "baseURL": "https://eu.openrouter.ai/api/v1",
+  "ttlHours": 6,
+  "timeoutMs": 4000,
+  "onError": "open",
+  "allow": [],
+  "debug": false
+}

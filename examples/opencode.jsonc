@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Pick the plugin up (the "plugin add" command writes this for you).
+  "plugin": ["opencode-openrouter-eu"],
+
+  "providers": {
+    "openrouter": {
+      // Required: sends requests to the European in-region endpoint.
+      "settings": { "baseURL": "https://eu.openrouter.ai/api/v1" }
+    }
+  }
+}
