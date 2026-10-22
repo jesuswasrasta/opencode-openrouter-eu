@@ -1,6 +1,6 @@
 import { applyFilter } from "./apply"
 import { isGlobalEndpoint, loadCatalog, type CatalogDeps, type CatalogResult } from "./catalog"
-import { DEFAULT_EU_BASE_URL, PLUGIN_ID } from "./constants"
+import { AUTO_ROUTER_ID, DEFAULT_EU_BASE_URL, PLUGIN_ID } from "./constants"
 import { loadConfig, normalizeBaseURL, type Config } from "./config"
 import { createLogger, type Logger } from "./log"
 import type {
@@ -74,6 +74,13 @@ export function filterModels(
     return
   }
   log.info(`kept ${result.kept} model(s), removed ${result.removed.length}`)
+
+  if (result.removed.includes(AUTO_ROUTER_ID)) {
+    log.info(
+      `${AUTO_ROUTER_ID} (Auto Router) was removed because OpenRouter refuses it inside a data region ` +
+        '(HTTP 400 "The openrouter/auto router is not available in your data region"). Pick a model explicitly.',
+    )
+  }
 }
 
 export interface SetupOptions {

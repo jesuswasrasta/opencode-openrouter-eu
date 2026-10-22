@@ -89,6 +89,34 @@ describe("applyFilter", () => {
     expect(removed).toEqual(["mistralai/devstral-2512", "google/gemini-3.5-flash"])
   })
 
+  test("removes the Auto Router, which OpenRouter refuses inside a data region", () => {
+    const { editor: target, removed } = editor([
+      { id: "openrouter/auto", providerID: "openrouter" },
+      { id: "openai/gpt-5-mini", providerID: "openrouter" },
+    ])
+    const result = applyFilter(target, {
+      providerID: "openrouter",
+      keep: new Set(["openai/gpt-5-mini"]),
+      allow: new Set(),
+      catalogAvailable: true,
+      onError: "open",
+    })
+    expect(removed).toEqual(["openrouter/auto"])
+    expect(result.kept).toBe(1)
+  })
+
+  test("keeps a router that is explicitly allow-listed", () => {
+    const { editor: target, removed } = editor([{ id: "openrouter/pareto-code", providerID: "openrouter" }])
+    applyFilter(target, {
+      providerID: "openrouter",
+      keep: new Set(),
+      allow: new Set(["openrouter/pareto-code"]),
+      catalogAvailable: true,
+      onError: "open",
+    })
+    expect(removed).toEqual([])
+  })
+
   test("keeps going when a single removal fails", () => {
     const { editor: target, removed } = editor(models, ["mistralai/devstral-2512"])
     const result = applyFilter(target, {

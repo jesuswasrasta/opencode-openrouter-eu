@@ -75,6 +75,29 @@ describe("filterModels", () => {
     expect(log.lines.join(" ")).toContain("kept 1 model(s), removed 1")
   })
 
+  test("removes the Auto Router and explains why", () => {
+    const removed: string[] = []
+    const target: OpenCodeModelEditor = {
+      list: () => [
+        { id: "openrouter/auto", providerID: "openrouter", modelID: "openrouter/auto" },
+        { id: "openai/gpt-5-mini", providerID: "openrouter", modelID: "openai/gpt-5-mini" },
+      ],
+      remove: (_providerID, modelID) => {
+        removed.push(modelID)
+      },
+      provider: {
+        list: () => [],
+        get: (id) =>
+          id === "openrouter" ? { provider: { id, settings: { baseURL: EU } } } : undefined,
+      },
+    }
+    const log = silentLogger()
+    filterModels(target, config(), EU, { ids: new Set(["openai/gpt-5-mini"]), source: "network", fetchedAt: 0 }, log)
+    expect(removed).toEqual(["openrouter/auto"])
+    expect(log.lines.join(" ")).toContain("Auto Router")
+    expect(log.lines.join(" ")).toContain("HTTP 400")
+  })
+
   test("stays inert when the provider has no endpoint override", () => {
     const { editor: target, removed } = editor()
     const log = silentLogger()

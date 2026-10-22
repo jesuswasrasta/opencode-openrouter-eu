@@ -26,7 +26,7 @@ The correct fix is to point the provider at the in-region endpoint:
 
 That moves the traffic, but not the model catalog: OpenCode builds the OpenRouter model list from [models.dev](https://models.dev), which is global and has no notion of region. The picker therefore still offers hundreds of models that will fail, and the documented `whitelist` / `blacklist` options are ignored by OpenCode V2 (`packages/core/src/config/normalize.ts` lists them as unsupported).
 
-This plugin closes that gap. It reads `GET {baseURL}/models`; the in-region endpoint already returns only the models that region can serve (67 models at the time of writing, against 468 on the global endpoint), and removes every other OpenRouter model from the registry.
+This plugin closes that gap. It reads `GET {baseURL}/models`; the in-region endpoint already returns only the models that region can serve (67 models at the time of writing, against 468 on the global endpoint), and removes every other OpenRouter model from the registry. The list is conservative: it omits OpenRouter's routers even when some of them can still answer in-region, see [Known limitations](https://github.com/jesuswasrasta/opencode-openrouter-eu/blob/main/docs/known-limitations.md).
 
 ## Requirements
 
@@ -134,6 +134,22 @@ If the resolved endpoint is OpenRouter's global one (`https://openrouter.ai/api/
 - Cache precedence: fresh cache, then network (one retry), then stale cache for the same endpoint, then the `onError` policy.
 - `onError: "open"` is the default because OpenRouter already refuses out-of-region models: a network hiccup costs accuracy, not compliance.
 
+## Known limitations
+
+OpenRouter's routers are meta-models, and the in-region catalog does not list
+them, so the plugin removes them all. They do not all behave the same way:
+
+- `openrouter/auto` (Auto Router) is refused inside a data region with `400`;
+- `openrouter/free` and `openrouter/bodybuilder` fail with `404`, `openrouter/fusion` with `403`;
+- `openrouter/pareto-code` works, and can be kept with `allow`.
+
+The global endpoint is not a workaround: a region-restricted workspace rejects
+global requests with `403`.
+
+See [docs/known-limitations.md](https://github.com/jesuswasrasta/opencode-openrouter-eu/blob/main/docs/known-limitations.md) for the observed
+responses, the `allow` example and the commands to verify the behaviour in your
+own region.
+
 ## Troubleshooting
 
 | Symptom | Likely cause |
@@ -144,6 +160,7 @@ If the resolved endpoint is OpenRouter's global one (`https://openrouter.ai/api/
 | `[openrouter-eu] ... set baseURL in the plugin config` | Provider and catalog endpoints disagree; set `baseURL` explicitly |
 | `[openrouter-eu] cannot load the regional catalog` | Network failure with an empty cache; with `onError: open` nothing is filtered |
 | `[openrouter-eu] ctx.model.transform is not available` | Not OpenCode V2; on V1 use `provider.whitelist` instead |
+| `Model unavailable: openrouter/auto` | Expected: the Auto Router is refused inside a data region. Pick a model explicitly, or allow-list `openrouter/pareto-code` if you want a router |
 | `Model unavailable: openrouter/...` | Working as intended: the model is not served in this region |
 
 Logs are printed by the OpenCode server; run `opencode --print-logs` or set `OPENCODE_LOG_LEVEL=debug`.

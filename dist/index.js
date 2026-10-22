@@ -43,6 +43,7 @@ import { dirname, join } from "node:path";
 
 // src/constants.ts
 var PLUGIN_ID = "openrouter-eu";
+var AUTO_ROUTER_ID = "openrouter/auto";
 var DEFAULT_EU_BASE_URL = "https://eu.openrouter.ai/api/v1";
 var GLOBAL_HOSTS = ["openrouter.ai", "www.openrouter.ai"];
 var CACHE_FILE_NAME = "openrouter-eu-models.json";
@@ -327,6 +328,9 @@ function filterModels(editor, config, catalogBaseURL, catalog, log) {
     return;
   }
   log.info(`kept ${result.kept} model(s), removed ${result.removed.length}`);
+  if (result.removed.includes(AUTO_ROUTER_ID)) {
+    log.info(`${AUTO_ROUTER_ID} (Auto Router) was removed because OpenRouter refuses it inside a data region ` + '(HTTP 400 "The openrouter/auto router is not available in your data region"). Pick a model explicitly.');
+  }
 }
 async function setup(ctx, options = {}) {
   const { config, warnings } = await loadConfig(options.configPath);
