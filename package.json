@@ -22,11 +22,10 @@
   "license": "MIT",
   "author": "Ferdinando Santacroce <ferdinando.santacroce@gmail.com>",
   "scripts": {
-    "build": "bun build src/index.ts --outfile dist/index.js --target node --format esm",
+    "compile": "bun build src/index.ts --outfile dist/index.js --target node --format esm",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "check": "bun run typecheck && bun test && bun run build",
-    "prepack": "bun run build"
+    "check": "bun run typecheck && bun test && bun run compile"
   },
   "devDependencies": {
     "@types/bun": "latest",

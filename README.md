@@ -159,7 +159,7 @@ Logs are printed by the OpenCode server; run `opencode --print-logs` or set `OPE
 bun install
 bun run typecheck   # tsc --noEmit
 bun test            # unit tests, no network
-bun run build       # dist/index.js, ESM bundle
+bun run compile     # dist/index.js, ESM bundle
 bun run check       # all of the above
 ```
 
@@ -176,7 +176,13 @@ Layout:
 
 The OpenCode V2 plugin types are not published on npm (`@opencode-ai/plugin` stops at 1.19.x, the V1 API), so `src/types.ts` declares only the surface this plugin uses, and every access is guarded at runtime.
 
-To publish to npm: `bun run build && npm publish`.
+To publish to npm: `bun run compile && npm publish`.
+
+Note: the scripts are intentionally not named `build`, `prepare` or `prepack`.
+OpenCode's compiled binary re-invokes itself as `npm` for the git-dependency
+prepare step, so any of those lifecycle names makes `opencode plugin add` fail
+with `git dep preparation failed` (upstream issue #49704). `dist/` is committed
+for the same reason.
 
 ## License
 
